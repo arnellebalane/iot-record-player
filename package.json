@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Record player built with NodeMCU microcontroller and Spotify API",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

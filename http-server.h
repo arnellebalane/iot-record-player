@@ -4,8 +4,10 @@
 #include "WiFiServer.h"
 #include "WiFiClient.h"
 
+#include "http-request.h"
+
 void startHttpServer();
-void maintainHttpClientConnections();
+void manageHttpClientConnections();
 void handleHttpClientRequests();
 
 #endif

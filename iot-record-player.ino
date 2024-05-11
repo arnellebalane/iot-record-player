@@ -11,6 +11,6 @@ void setup() {
 
 void loop() {
     ensureWifiConnection();
-    maintainHttpClientConnections();
+    manageHttpClientConnections();
     handleHttpClientRequests();
 }

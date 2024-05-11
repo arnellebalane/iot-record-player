@@ -4,7 +4,7 @@
 void ensureWifiConnection() {
     if (WiFi.status() != WL_CONNECTED) {
         Serial.print("Connecting to network");
-        WiFi.begin(secrets::WIFI_SSID, secrets::WIFI_PASSWORD);
+        WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
         while (WiFi.status() != WL_CONNECTED) {
             delay(500);
             Serial.print(".");

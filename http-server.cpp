@@ -1,7 +1,7 @@
 #include "WiFiServer.h"
 #include "WiFiClient.h"
-
 #include "http-request.h"
+#include "http-handlers.h"
 
 WiFiServer server(80);
 WiFiClient clients[8];
@@ -32,13 +32,18 @@ void manageHttpClientConnections() {
     }
 }
 
-void handleHttpClientRequests() {
+void handleHttpClientRequests(HttpHandlersMap handlers) {
     for (int i = 0; i < 8; i++) {
         while (clients[i] && clients[i].available()) {
             HttpRequest request = parseHttpRequest(clients[i]);
 
-            Serial.println(request.method + " " + request.path);
-            Serial.println(request.search["code"]);
+            HttpHandlersMap::iterator iterator = handlers.find(request.path);
+            if (iterator == handlers.end()) {
+                clients[i].println("HTTP/1.1 404 Not Found\n");
+            } else {
+                HttpHandler handler = handlers[request.path];
+                handler(&clients[i], &request);
+            }
         }
     }
 }

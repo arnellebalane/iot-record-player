@@ -1,5 +1,6 @@
 #include "wifi.h"
 #include "http-server.h"
+#include "http-handlers.h"
 
 void setup() {
     Serial.begin(115200);
@@ -12,5 +13,5 @@ void setup() {
 void loop() {
     ensureWifiConnection();
     manageHttpClientConnections();
-    handleHttpClientRequests();
+    handleHttpClientRequests(httpHandlers);
 }

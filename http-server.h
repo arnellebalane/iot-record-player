@@ -3,11 +3,11 @@
 
 #include "WiFiServer.h"
 #include "WiFiClient.h"
-
 #include "http-request.h"
+#include "http-handlers.h"
 
 void startHttpServer();
 void manageHttpClientConnections();
-void handleHttpClientRequests();
+void handleHttpClientRequests(HttpHandlersMap handlers);
 
 #endif

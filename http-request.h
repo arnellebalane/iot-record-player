@@ -2,7 +2,6 @@
 #define HTTP_REQUEST_H
 
 #include <map>
-
 #include "WiFiClient.h"
 
 struct HttpRequest {

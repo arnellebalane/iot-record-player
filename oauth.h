@@ -4,5 +4,7 @@
 #include "secrets.h"
 
 String getAuthorizeUrl();
+String getTokenRequestPayload(String authCode);
+String getBasicAuthorizationHeader();
 
 #endif

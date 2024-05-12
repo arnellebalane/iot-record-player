@@ -4,10 +4,12 @@
 #include <map>
 #include "WiFiClient.h"
 
+using SearchParams = std::map<String, String>;
+
 struct HttpRequest {
     String method;
     String path;
-    std::map<String, String> search;
+    SearchParams search;
 };
 
 HttpRequest parseHttpRequest(WiFiClient client);

@@ -12,11 +12,13 @@ struct HttpResponse {
     String body;
 };
 
+using HttpHeaders = std::map<String, String>;
+
 extern BearSSL::WiFiClientSecure httpClient;
 extern BearSSL::X509List trustedRoots;
 
 void configureCertificates();
 
-HttpResponse sendHttpRequest(String method, String url, String payload, std::map<String, String> headers);
+HttpResponse sendHttpRequest(String method, String url, String payload, HttpHeaders headers);
 
 #endif

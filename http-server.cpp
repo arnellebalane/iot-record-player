@@ -42,7 +42,7 @@ void handleHttpClientRequests(HttpHandlersMap handlers) {
                 clients[i].println("HTTP/1.1 404 Not Found\n");
             } else {
                 HttpHandler handler = handlers[request.path];
-                handler(&clients[i], &request);
+                handler(clients[i], request);
             }
         }
     }

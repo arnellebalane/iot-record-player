@@ -13,7 +13,7 @@ void configureCertificates() {
     httpClient.setTrustAnchors(&trustedRoots);
 }
 
-HttpResponse sendHttpRequest(String method, String url, String payload, std::map<String, String> headers) {
+HttpResponse sendHttpRequest(String method, String url, String payload, HttpHeaders headers) {
     HTTPClient http;
     http.begin(httpClient, url);
 

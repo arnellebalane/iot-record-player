@@ -28,9 +28,8 @@ void receiveAuthorizationCode(WiFiClient& client, HttpRequest& request) {
 
         String authCode = request.search["code"];
         String payload = getTokenRequestPayload(authCode);
-        String authorizationHeader = getBasicAuthorizationHeader();
         HttpResponse response = sendHttpRequest("POST", OAUTH_TOKEN_URL, payload, {
-            {"Authorization", authorizationHeader},
+            {"Authorization", getBasicAuthorizationHeader()},
             {"Content-Type", "application/x-www-form-urlencoded"}
         });
 

@@ -27,6 +27,8 @@ HttpResponse sendHttpRequest(String method, String url, String payload, HttpHead
 
     if (method == "POST") {
         response.status = http.POST(payload);
+    } else if (method == "PUT") {
+        response.status = http.PUT(payload);
     } else if (method == "GET") {
         response.status = http.GET();
     }

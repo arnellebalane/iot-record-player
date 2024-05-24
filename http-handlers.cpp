@@ -35,22 +35,25 @@ void receiveAuthorizationCode(WiFiClient& client, HttpRequest& request) {
 
         if (response.status == HTTP_CODE_OK) {
             Serial.println("Received access token");
-            Serial.println(response.body);
 
             JsonDocument json;
             DeserializationError jsonError = deserializeJson(json, response.body);
             if (jsonError) {
                 Serial.println("Failed to deserialize access token");
                 client.println("HTTP/1.1 500 Internal Server Error\n");
+                client.println("ERROR\n");
             } else {
                 storeAccessToken(json);
                 client.println("HTTP/1.1 200 OK\n");
+                client.println("OK\n");
             }
         } else {
             Serial.println("Failed to retrieve access token");
             Serial.println("Status code: " + response.status);
             client.println("HTTP/1.1 500 Internal Server Error\n");
+            client.println("ERROR\n");
         }
+        client.stop();
     }
 }
 

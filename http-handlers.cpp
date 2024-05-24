@@ -1,12 +1,12 @@
 #include <functional>
 #include <map>
-#include "ArduinoJson.h"
-#include "WiFiClient.h"
+#include <ArduinoJson.h>
+#include <WiFiClient.h>
 #include "secrets.h"
 #include "oauth.h"
 #include "http-request.h"
-#include "http-handlers.h"
 #include "http-client.h"
+#include "http-handlers.h"
 
 void startAuthorization(WiFiClient& client, HttpRequest& request) {
     Serial.println("Starting authorization");

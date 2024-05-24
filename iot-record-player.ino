@@ -22,8 +22,7 @@ void loop() {
 
     String data = readNfcData();
     if (data.length() > 0) {
-        Serial.println("Data received from NFC reader: " + data);
+        startPlayback(data);
+        delay(5000);
     }
-
-    delay(5000);
 }

@@ -1,3 +1,4 @@
+#include "nfc.h"
 #include "wifi.h"
 #include "http-server.h"
 #include "http-handlers.h"
@@ -8,6 +9,7 @@ void setup() {
     Serial.begin(115200);
     Serial.println("IoT Record Player");
 
+    initializeNfcReader();
     ensureWifiConnection();
     configureCertificates();
     startHttpServer();
@@ -18,10 +20,10 @@ void loop() {
     manageHttpClientConnections();
     handleHttpClientRequests(httpHandlers);
 
-    String message = Serial.readString();
-    message.trim();
-
-    if (message.length() > 0) {
-        startPlayback(message);
+    String data = readNfcData();
+    if (data.length() > 0) {
+        Serial.println("Data received from NFC reader: " + data);
     }
+
+    delay(5000);
 }

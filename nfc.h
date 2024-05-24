@@ -11,8 +11,10 @@
 
 void initializeNfcReader();
 String readNfcData();
+uint8_t writeNfcData(String data);
 uint8_t waitForNfcCard(uint8_t uid[]);
 uint8_t authenticateBlock(uint8_t uid[], uint8_t blockNumber);
 uint8_t readBlock(uint8_t blockNumber, uint8_t blockData[]);
+uint8_t writeBlock(uint8_t blockNumber, uint8_t blockData[]);
 
 #endif

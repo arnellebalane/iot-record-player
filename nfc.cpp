@@ -8,8 +8,14 @@ PN532_SPI spi(SPI, 2);
 PN532 nfc(spi);
 
 uint8_t supportedUidLength = 4;
-uint8_t blockLimit = 16 * 4;
 uint8_t blockSize = 16;
+
+// Mifare 1K cards have 16 sectors, 4 blocks per sector, and 16 bytes per block.
+uint8_t blockNumberLimit = 16 * 4;
+
+// The first sector usually stores the CIS blocks which contains information about the card, access group, etc.
+// so we skip the first sector and start reading from block number 4
+uint8_t blockNumberInitial = 4;
 
 void initializeNfcReader() {
     nfc.begin();
@@ -34,25 +40,19 @@ void initializeNfcReader() {
 String readNfcData() {
     String data = "";
     uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };
-    bool complete = false;
 
     if (waitForNfcCard(uid)) {
-        // Mifare 1K cards have 16 sectors, 4 blocks per sector, and 16 bytes per block.
-        // Keep reading each byte until we reach the end or until no data is found.
-        // The first sector usually stores the CIS blocks which contains information about the card, access group, etc.
-        // so we skip the first sector and start reading from block number 4
-        uint8_t blockNumber = 4;
+        uint8_t blockNumber = blockNumberInitial;
         uint8_t blockData[blockSize];
+        bool complete = false;
 
-        while (blockNumber < blockLimit && !complete) {
+        // Keep reading each byte until we reach the end or until no data is found.
+        while (blockNumber < blockNumberLimit && !complete) {
             if (!authenticateBlock(uid, blockNumber)) {
-                Serial.print("Failed to authenticate block number: ");
-                Serial.println(blockNumber);
                 return "";
             }
 
             readBlock(blockNumber, blockData);
-            nfc.PrintHexChar(blockData, blockSize);
 
             for (uint8_t i = 0; i < blockSize; i++) {
                 if (blockData[i] == 0) {
@@ -64,8 +64,41 @@ String readNfcData() {
             blockNumber++;
         }
     }
-
     return data;
+}
+
+uint8_t writeNfcData(String data) {
+    uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };
+
+    if (waitForNfcCard(uid)) {
+        uint16_t dataLength = data.length();
+        uint8_t blockNumber = blockNumberInitial;
+        uint8_t blockData[blockSize];
+        bool complete = false;
+
+        while (blockNumber < blockNumberLimit && !complete) {
+            if (!authenticateBlock(uid, blockNumber)) {
+                return 0;
+            }
+
+            for (uint8_t i = 0; i < blockSize; i++) {
+                uint16_t dataIndex = (blockNumber - blockNumberInitial) * blockSize + i;
+                if (dataIndex < dataLength) {
+                    blockData[i] = (uint8_t) data.charAt(dataIndex);
+                } else {
+                    complete = true;
+                    blockData[i] = 0;
+                }
+
+            }
+
+            writeBlock(blockNumber, blockData);
+
+            blockNumber++;
+        }
+        return 1;
+    }
+    return 0;
 }
 
 uint8_t waitForNfcCard(uint8_t uid[]) {
@@ -93,12 +126,29 @@ uint8_t authenticateBlock(uint8_t uid[], uint8_t blockNumber) {
     Serial.print("Authenticating block number: ");
     Serial.println(blockNumber);
 
-    return nfc.mifareclassic_AuthenticateBlock(uid, supportedUidLength, blockNumber, 0, NFC_AUTHENTICATION_KEY);
+    uint8_t success = nfc.mifareclassic_AuthenticateBlock(uid, supportedUidLength, blockNumber, 0, NFC_AUTHENTICATION_KEY);
+    if (!success) {
+        Serial.print("Failed to authenticate block number: ");
+        Serial.println(blockNumber);
+    }
+    return success;
 }
 
 uint8_t readBlock(uint8_t blockNumber, uint8_t blockData[]) {
-    Serial.print("Reading block number: ");
+    Serial.print("Reading from block number: ");
     Serial.println(blockNumber);
 
-    return nfc.mifareclassic_ReadDataBlock(blockNumber, blockData);
+    uint8_t success = nfc.mifareclassic_ReadDataBlock(blockNumber, blockData);
+    if (success) {
+        nfc.PrintHexChar(blockData, blockSize);
+    }
+    return success;
+}
+
+uint8_t writeBlock(uint8_t blockNumber, uint8_t blockData[]) {
+    Serial.print("Writing to block number: ");
+    Serial.println(blockNumber);
+    nfc.PrintHexChar(blockData, blockSize);
+
+    return nfc.mifareclassic_WriteDataBlock(blockNumber, blockData);
 }

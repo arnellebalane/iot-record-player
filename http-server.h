@@ -1,13 +1,21 @@
 #ifndef HTTP_SERVER_H
 #define HTTP_SERVER_H
 
-#include <WiFiServer.h>
-#include <WiFiClient.h>
-#include "http-request.h"
-#include "http-handlers.h"
+#include <ESP8266WebServer.h>
+#include "oauth.h"
+#include "secrets.h"
+#include "http-client.h"
+
+using HttpHandler = std::function<void ()>;
+using HttpHandlersMap = std::map<String, HttpHandler>;
 
 void startHttpServer();
-void manageHttpClientConnections();
-void handleHttpClientRequests(HttpHandlersMap handlers);
+void handleHttpClients();
+void setHttpHandlers(HttpHandlersMap handlers);
 
+// HTTP Request Handlers
+void startAuthorization();
+void receiveAuthorizationCode();
+
+extern HttpHandlersMap httpHandlersStation;
 #endif

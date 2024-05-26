@@ -1,5 +1,12 @@
 #include <ESP8266WiFi.h>
 #include "secrets.h"
+#include "wifi.h"
+
+int wifiMode;
+
+void determineWifiMode() {
+    wifiMode = WIFI_MODE_STATION;
+}
 
 void ensureWifiConnection() {
     if (WiFi.status() != WL_CONNECTED) {

@@ -1,7 +1,6 @@
 #include "nfc.h"
 #include "wifi.h"
 #include "http-server.h"
-#include "http-handlers.h"
 #include "http-client.h"
 #include "player.h"
 
@@ -9,21 +8,27 @@ void setup() {
     Serial.begin(115200);
     Serial.println("IoT Record Player");
 
-    initializeNfcReader();
-    ensureWifiConnection();
-    configureCertificates();
-    startHttpServer();
+    determineWifiMode();
+
+    if (wifiMode == WIFI_MODE_STATION) {
+        initializeNfcReader();
+        ensureWifiConnection();
+        configureCertificates();
+        startHttpServer();
+        setHttpHandlers(httpHandlersStation);
+    }
 }
 
 void loop() {
-    ensureWifiConnection();
-    ensureValidAccessToken();
-    manageHttpClientConnections();
-    handleHttpClientRequests(httpHandlers);
+    if (wifiMode == WIFI_MODE_STATION) {
+        ensureWifiConnection();
+        ensureValidAccessToken();
+        handleHttpClients();
 
-    String data = readNfcData();
-    if (data.length() > 0) {
-        startPlayback(data);
-        delay(5000);
+        String data = readNfcData();
+        if (data.length() > 0) {
+            startPlayback(data);
+            delay(5000);
+        }
     }
 }

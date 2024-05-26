@@ -1,11 +1,13 @@
 #include <ArduinoJson.h>
 #include <base64.h>
+#include "http-client.h"
 #include "secrets.h"
+#include "oauth.h"
 
 base64 b64;
 
-String accessToken;
-String refreshToken;
+String accessToken = "";
+String refreshToken = "";
 int tokenValidity;
 double tokenIssueTime;
 
@@ -24,11 +26,54 @@ String getTokenRequestPayload(String authCode) {
         + "&redirect_uri=" + OAUTH_REDIRECT_URL;
 }
 
+String getTokenRefreshPayload() {
+    return "client_id=" + OAUTH_CLIENT_ID
+        + "&grant_type=refresh_token"
+        + "&refresh_token=" + refreshToken;
+}
+
 void storeAccessToken(JsonDocument json) {
     accessToken = json["access_token"].as<String>();
-    refreshToken = json["refresh_token"].as<String>();
+    if (json.containsKey("refresh_token")) {
+        refreshToken = json["refresh_token"].as<String>();
+    }
     tokenValidity = json["expires_in"].as<int>();
     tokenIssueTime = millis() / 1000.0;
+}
+
+void ensureValidAccessToken() {
+    if (tokenValidity > 0) {
+        double now = millis() / 1000.0;
+        if (now - tokenIssueTime >= tokenValidity) {
+            Serial.println("Access token has expired");
+            if (refreshToken == "") {
+                Serial.println("Refresh token not found, unable to refresh access token");
+                return;
+            }
+            Serial.println("Refreshing access token");
+
+            String payload = getTokenRefreshPayload();
+            HttpResponse response = sendHttpRequest("POST", OAUTH_TOKEN_URL, payload, {
+                {"Authorization", getBasicAuthorizationHeader()},
+                {"Content-Type", "application/x-www-form-urlencoded"}
+            });
+
+            if (response.status == HTTP_CODE_OK) {
+                Serial.println("Received new access token");
+                Serial.println(response.body);
+
+                JsonDocument json;
+                DeserializationError jsonError = deserializeJson(json, response.body);
+                if (jsonError) {
+                    Serial.println("Failed to deserialize access token");
+                } else {
+                    storeAccessToken(json);
+                }
+            } else {
+                Serial.println("Failed to refresh access token");
+            }
+        }
+    }
 }
 
 String getBasicAuthorizationHeader() {

@@ -43,6 +43,13 @@ void storeAccessToken(JsonDocument json) {
     }
 }
 
+void initializeAccessToken() {
+    refreshToken = readRefreshToken();
+    if (refreshToken.length() > 0) {
+        refreshAccessToken();
+    }
+}
+
 void ensureValidAccessToken() {
     if (tokenValidity > 0) {
         double now = millis() / 1000.0;
@@ -52,29 +59,32 @@ void ensureValidAccessToken() {
                 Serial.println("Refresh token not found, unable to refresh access token");
                 return;
             }
-            Serial.println("Refreshing access token");
-
-            String payload = getTokenRefreshPayload();
-            HttpResponse response = sendHttpRequest("POST", OAUTH_TOKEN_URL, payload, {
-                {"Authorization", getBasicAuthorizationHeader()},
-                {"Content-Type", "application/x-www-form-urlencoded"}
-            });
-
-            if (response.status == HTTP_CODE_OK) {
-                Serial.println("Received new access token");
-                Serial.println(response.body);
-
-                JsonDocument json;
-                DeserializationError jsonError = deserializeJson(json, response.body);
-                if (jsonError) {
-                    Serial.println("Failed to deserialize access token");
-                } else {
-                    storeAccessToken(json);
-                }
-            } else {
-                Serial.println("Failed to refresh access token");
-            }
+            refreshAccessToken();
         }
+    }
+}
+
+void refreshAccessToken() {
+    Serial.println("Refreshing access token");
+
+    String payload = getTokenRefreshPayload();
+    HttpResponse response = sendHttpRequest("POST", OAUTH_TOKEN_URL, payload, {
+        {"Authorization", getBasicAuthorizationHeader()},
+        {"Content-Type", "application/x-www-form-urlencoded"}
+    });
+
+    if (response.status == HTTP_CODE_OK) {
+        Serial.println("Received new access token");
+
+        JsonDocument json;
+        DeserializationError jsonError = deserializeJson(json, response.body);
+        if (jsonError) {
+            Serial.println("Failed to deserialize access token");
+        } else {
+            storeAccessToken(json);
+        }
+    } else {
+        Serial.println("Failed to refresh access token");
     }
 }
 

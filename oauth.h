@@ -11,7 +11,9 @@ String getAuthorizeUrl();
 String getTokenRequestPayload(String authCode);
 String getTokenRefreshPayload();
 void storeAccessToken(JsonDocument json);
+void initializeAccessToken();
 void ensureValidAccessToken();
+void refreshAccessToken();
 String getBasicAuthorizationHeader();
 String getBearerAuthorizationHeader();
 

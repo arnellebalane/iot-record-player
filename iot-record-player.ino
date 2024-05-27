@@ -17,6 +17,7 @@ void setup() {
         configureCertificates();
         startHttpServer();
         setHttpHandlers(httpHandlersStation);
+        initializeAccessToken();
     } else if (wifiMode == WIFI_MODE_ACCESS_POINT) {
         initializeAccessPoint();
         startHttpServer();

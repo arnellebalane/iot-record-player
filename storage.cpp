@@ -77,6 +77,13 @@ String readWifiPassword() {
 }
 
 String readRefreshToken() {
+    int ssidLength = EEPROM.read(getStorageAddress(0));
+    int passwordLength = EEPROM.read(getStorageAddress(1));
+    int tokenLength = EEPROM.read(getStorageAddress(2));
+    int tokenOffset = 3 + ssidLength + passwordLength;
     String token = "";
+    for (int i = 0; i < tokenLength; i++) {
+        token += (char) EEPROM.read(getStorageAddress(tokenOffset + i));
+    }
     return token;
 }

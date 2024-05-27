@@ -1,4 +1,5 @@
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
 #include "storage.h"
 #include "secrets.h"
 #include "wifi.h"
@@ -16,7 +17,9 @@ void determineWifiMode() {
 }
 
 void ensureWifiConnection() {
-    if (WiFi.status() != WL_CONNECTED) {
+    if (WiFi.status() == WL_CONNECTED) {
+        MDNS.update();
+    } else {
         Serial.print("Connecting to network");
         String ssid = readWifiSsid();
         String password = readWifiPassword();
@@ -31,6 +34,8 @@ void ensureWifiConnection() {
 
         Serial.print("IP address: ");
         Serial.println(WiFi.localIP());
+
+        initializeDns();
     }
 }
 
@@ -40,8 +45,18 @@ void initializeAccessPoint() {
         Serial.println("Access point initialized successfully");
         Serial.print("IP Address: ");
         Serial.println(WiFi.softAPIP());
+
+        initializeDns();
     } else {
         Serial.println("Failed to initialize access point");
         while (1);
+    }
+}
+
+void initializeDns() {
+    if (MDNS.begin(WIFI_HOSTNAME)) {
+        Serial.println("mDNS responder started");
+    } else {
+        Serial.println("mDNS responder failed to start");
     }
 }

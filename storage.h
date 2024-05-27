@@ -7,5 +7,7 @@
 void initializeStorage();
 int getStorageAddress(int address);
 void storeWifiCredentials(String ssid, String password);
+String readWifiSsid();
+String readWifiPassword();
 
 #endif

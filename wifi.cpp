@@ -1,17 +1,21 @@
 #include <ESP8266WiFi.h>
+#include "storage.h"
 #include "secrets.h"
 #include "wifi.h"
 
 int wifiMode;
 
 void determineWifiMode() {
-    wifiMode = WIFI_MODE_ACCESS_POINT;
+    wifiMode = WIFI_MODE_STATION;
 }
 
 void ensureWifiConnection() {
     if (WiFi.status() != WL_CONNECTED) {
         Serial.print("Connecting to network");
-        WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+        String ssid = readWifiSsid();
+        String password = readWifiPassword();
+
+        WiFi.begin(ssid, password);
         while (WiFi.status() != WL_CONNECTED) {
             delay(500);
             Serial.print(".");

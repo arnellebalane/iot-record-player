@@ -13,8 +13,6 @@ extern String OAUTH_SCOPES;
 
 extern String PLAYER_PLAYBACK_URL;
 
-extern String WIFI_SSID;
-extern String WIFI_PASSWORD;
 extern String WIFI_AP_SSID;
 extern String WIFI_AP_PASSWORD;
 

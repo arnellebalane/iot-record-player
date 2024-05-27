@@ -39,10 +39,25 @@ void storeWifiCredentials(String ssid, String password) {
     }
 
     EEPROM.commit();
+}
 
-    for (int i = 0; i < 4096; i++) {
-        Serial.print(EEPROM.read(i));
-        Serial.print(" ");
+String readWifiSsid() {
+    int ssidLength = EEPROM.read(getStorageAddress(0));
+    int ssidOffset = 3;
+    String ssid = "";
+    for (int i = 0; i < ssidLength; i++) {
+        ssid += (char) EEPROM.read(getStorageAddress(ssidOffset + i));
     }
-    Serial.println();
+    return ssid;
+}
+
+String readWifiPassword() {
+    int ssidLength = EEPROM.read(getStorageAddress(0));
+    int passwordLength = EEPROM.read(getStorageAddress(1));
+    int passwordOffset = 3 + ssidLength;
+    String password = "";
+    for (int i = 0; i < passwordLength; i++) {
+        password += (char) EEPROM.read(getStorageAddress(passwordOffset + i));
+    }
+    return password;
 }

@@ -9,6 +9,7 @@ void setup() {
     Serial.println("IoT Record Player");
 
     determineWifiMode();
+    initializeStorage();
 
     if (wifiMode == WIFI_MODE_STATION) {
         initializeNfcReader();

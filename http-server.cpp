@@ -1,5 +1,6 @@
 #include <ESP8266WebServer.h>
 #include "oauth.h"
+#include "storage.h"
 #include "secrets.h"
 #include "http-client.h"
 #include "http-server.h"
@@ -68,7 +69,7 @@ void receiveAuthorizationCode() {
     }
 }
 
-void storeWifiCredentials() {
+void receiveWifiCredentials() {
     String body = server.arg("plain");
     body.trim();
 
@@ -97,9 +98,8 @@ void storeWifiCredentials() {
         password = json["password"].as<String>();
     }
 
-    Serial.println("WiFi credentials received");
-    Serial.println("SSID: " + ssid);
-    Serial.println("Password: " + password);
+    storeWifiCredentials(ssid, password);
+    Serial.println("WiFi credentials stored successfully");
     server.send(200, "text/plain", "OK");
 }
 
@@ -109,5 +109,5 @@ HttpHandlersMap httpHandlersStation = {
 };
 
 HttpHandlersMap httpHandlersAccessPoint = {
-    {"/", storeWifiCredentials}
+    {"/", receiveWifiCredentials}
 };

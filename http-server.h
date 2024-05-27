@@ -3,6 +3,7 @@
 
 #include <ESP8266WebServer.h>
 #include "oauth.h"
+#include "storage.h"
 #include "secrets.h"
 #include "http-client.h"
 
@@ -16,7 +17,7 @@ void setHttpHandlers(HttpHandlersMap handlers);
 // HTTP Request Handlers
 void startAuthorization();
 void receiveAuthorizationCode();
-void storeWifiCredentials();
+void receiveWifiCredentials();
 
 extern HttpHandlersMap httpHandlersStation;
 extern HttpHandlersMap httpHandlersAccessPoint;

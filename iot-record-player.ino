@@ -16,6 +16,10 @@ void setup() {
         configureCertificates();
         startHttpServer();
         setHttpHandlers(httpHandlersStation);
+    } else if (wifiMode == WIFI_MODE_ACCESS_POINT) {
+        initializeAccessPoint();
+        startHttpServer();
+        setHttpHandlers(httpHandlersAccessPoint);
     }
 }
 
@@ -30,5 +34,7 @@ void loop() {
             startPlayback(data);
             delay(5000);
         }
+    } else if (wifiMode == WIFI_MODE_ACCESS_POINT) {
+        handleHttpClients();
     }
 }

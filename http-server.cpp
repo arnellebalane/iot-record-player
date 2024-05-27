@@ -15,14 +15,6 @@ void handleHttpClients() {
     server.handleClient();
 }
 
-void handleRoot() {
-    Serial.println(server.method());
-    Serial.println(server.uri());
-    Serial.println(server.arg("code"));
-    Serial.println(server.arg("plain"));
-    server.send(200, "text/plain", "OK");
-}
-
 void setHttpHandlers(HttpHandlersMap handlers) {
     for (auto const &[path, handler] : handlers) {
         server.on(path, handler);
@@ -65,17 +57,57 @@ void receiveAuthorizationCode() {
         if (jsonError) {
             Serial.println("Failed to deserialize access token");
             server.send(500, "text/plain", "ERROR");
-        } else {
-            storeAccessToken(json);
-            server.send(200, "text/plain", "OK");
+            return;
         }
+
+        storeAccessToken(json);
+        server.send(200, "text/plain", "OK");
     } else {
         Serial.println("Failed to retrieve access token");
         server.send(500, "text/plain", "ERROR");
     }
 }
 
+void storeWifiCredentials() {
+    String body = server.arg("plain");
+    body.trim();
+
+    if (body.length() == 0) {
+        Serial.println("WiFi credentials not found");
+        server.send(400, "text/plain", "ERROR");
+        return;
+    }
+
+    JsonDocument json;
+    DeserializationError jsonError = deserializeJson(json, body);
+    if (jsonError) {
+        Serial.println("Failed to deserialize WiFi credentials");
+        server.send(500, "text/plain", "ERROR");
+        return;
+    }
+    if (!json.containsKey("ssid")) {
+        Serial.println("WiFi SSID not found");
+        server.send(400, "text/plain", "ERROR");
+        return;
+    }
+
+    String ssid = json["ssid"].as<String>();
+    String password = "";
+    if (json.containsKey("password")) {
+        password = json["password"].as<String>();
+    }
+
+    Serial.println("WiFi credentials received");
+    Serial.println("SSID: " + ssid);
+    Serial.println("Password: " + password);
+    server.send(200, "text/plain", "OK");
+}
+
 HttpHandlersMap httpHandlersStation = {
     {"/", startAuthorization},
     {"/oauth/spotify", receiveAuthorizationCode}
+};
+
+HttpHandlersMap httpHandlersAccessPoint = {
+    {"/", storeWifiCredentials}
 };

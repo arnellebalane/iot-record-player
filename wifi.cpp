@@ -5,7 +5,7 @@
 int wifiMode;
 
 void determineWifiMode() {
-    wifiMode = WIFI_MODE_STATION;
+    wifiMode = WIFI_MODE_ACCESS_POINT;
 }
 
 void ensureWifiConnection() {
@@ -21,5 +21,17 @@ void ensureWifiConnection() {
 
         Serial.print("IP address: ");
         Serial.println(WiFi.localIP());
+    }
+}
+
+void initializeAccessPoint() {
+    Serial.println("Initializing access point");
+    if (WiFi.softAP(WIFI_AP_SSID, WIFI_AP_PASSWORD)) {
+        Serial.println("Access point initialized successfully");
+        Serial.print("IP Address: ");
+        Serial.println(WiFi.softAPIP());
+    } else {
+        Serial.println("Failed to initialize access point");
+        while (1);
     }
 }

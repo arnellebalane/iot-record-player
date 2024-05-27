@@ -15,6 +15,8 @@ extern String PLAYER_PLAYBACK_URL;
 
 extern String WIFI_SSID;
 extern String WIFI_PASSWORD;
+extern String WIFI_AP_SSID;
+extern String WIFI_AP_PASSWORD;
 
 extern uint8_t NFC_AUTHENTICATION_KEY[6];
 

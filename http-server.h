@@ -16,6 +16,8 @@ void setHttpHandlers(HttpHandlersMap handlers);
 // HTTP Request Handlers
 void startAuthorization();
 void receiveAuthorizationCode();
+void storeWifiCredentials();
 
 extern HttpHandlersMap httpHandlersStation;
+extern HttpHandlersMap httpHandlersAccessPoint;
 #endif

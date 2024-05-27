@@ -1,5 +1,6 @@
 #include <ESP8266WebServer.h>
 #include "oauth.h"
+#include "nfc.h"
 #include "storage.h"
 #include "secrets.h"
 #include "http-client.h"
@@ -74,7 +75,7 @@ void receiveWifiCredentials() {
     body.trim();
 
     if (body.length() == 0) {
-        Serial.println("WiFi credentials not found");
+        Serial.println("Request body not found");
         server.send(400, "text/plain", "ERROR");
         return;
     }
@@ -87,7 +88,7 @@ void receiveWifiCredentials() {
         return;
     }
     if (!json.containsKey("ssid")) {
-        Serial.println("WiFi SSID not found");
+        Serial.println("'ssid' property not found");
         server.send(400, "text/plain", "ERROR");
         return;
     }
@@ -102,11 +103,42 @@ void receiveWifiCredentials() {
     server.send(200, "text/plain", "OK");
 }
 
+void writeContextToNfcCard() {
+    String body = server.arg("plain");
+    body.trim();
+
+    if (body.length() == 0) {
+        Serial.println("Request body not found");
+        server.send(400, "text/plain", "ERROR");
+        return;
+    }
+
+    JsonDocument json;
+    DeserializationError jsonError = deserializeJson(json, body);
+    if (jsonError) {
+        Serial.println("Failed to deserialize context data");
+        server.send(500, "text/plain", "ERROR");
+        return;
+    }
+    if (!json.containsKey("context_uri")) {
+        Serial.println("'context_uri' property not found");
+        server.send(400, "text/plain", "ERROR");
+        return;
+    }
+
+    String context = json["context_uri"].as<String>();
+    Serial.println("Writing context to NFC card: " + context);
+
+    while (!writeNfcData(context));
+    server.send(200, "text/plain", "OK");
+}
+
 HttpHandlersMap httpHandlersStation = {
     {"/", startAuthorization},
     {"/oauth/spotify", receiveAuthorizationCode}
 };
 
 HttpHandlersMap httpHandlersAccessPoint = {
-    {"/", receiveWifiCredentials}
+    {"/", receiveWifiCredentials},
+    {"/write", writeContextToNfcCard}
 };

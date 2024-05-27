@@ -14,6 +14,7 @@ extern int wifiMode;
 void determineWifiMode();
 void ensureWifiConnection();
 void initializeAccessPoint();
-void initializeDns();
+void initializeDnsResponder();
+void updateDnsResponder();
 
 #endif

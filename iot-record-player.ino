@@ -10,9 +10,9 @@ void setup() {
 
     determineWifiMode();
     initializeStorage();
+    initializeNfcReader();
 
     if (wifiMode == WIFI_MODE_STATION) {
-        initializeNfcReader();
         ensureWifiConnection();
         configureCertificates();
         startHttpServer();
@@ -23,9 +23,13 @@ void setup() {
         startHttpServer();
         setHttpHandlers(httpHandlersAccessPoint);
     }
+
+    initializeDnsResponder();
 }
 
 void loop() {
+    updateDnsResponder();
+
     if (wifiMode == WIFI_MODE_STATION) {
         ensureWifiConnection();
         ensureValidAccessToken();

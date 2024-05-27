@@ -17,9 +17,7 @@ void determineWifiMode() {
 }
 
 void ensureWifiConnection() {
-    if (WiFi.status() == WL_CONNECTED) {
-        MDNS.update();
-    } else {
+    if (WiFi.status() != WL_CONNECTED) {
         Serial.print("Connecting to network");
         String ssid = readWifiSsid();
         String password = readWifiPassword();
@@ -34,8 +32,6 @@ void ensureWifiConnection() {
 
         Serial.print("IP address: ");
         Serial.println(WiFi.localIP());
-
-        initializeDns();
     }
 }
 
@@ -45,18 +41,20 @@ void initializeAccessPoint() {
         Serial.println("Access point initialized successfully");
         Serial.print("IP Address: ");
         Serial.println(WiFi.softAPIP());
-
-        initializeDns();
     } else {
         Serial.println("Failed to initialize access point");
         while (1);
     }
 }
 
-void initializeDns() {
+void initializeDnsResponder() {
     if (MDNS.begin(WIFI_HOSTNAME)) {
         Serial.println("mDNS responder started");
     } else {
         Serial.println("mDNS responder failed to start");
     }
+}
+
+void updateDnsResponder() {
+    MDNS.update();
 }

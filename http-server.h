@@ -3,6 +3,7 @@
 
 #include <ESP8266WebServer.h>
 #include "oauth.h"
+#include "nfc.h"
 #include "storage.h"
 #include "secrets.h"
 #include "http-client.h"
@@ -18,6 +19,7 @@ void setHttpHandlers(HttpHandlersMap handlers);
 void startAuthorization();
 void receiveAuthorizationCode();
 void receiveWifiCredentials();
+void writeContextToNfcCard();
 
 extern HttpHandlersMap httpHandlersStation;
 extern HttpHandlersMap httpHandlersAccessPoint;

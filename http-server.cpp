@@ -99,7 +99,6 @@ void receiveWifiCredentials() {
     }
 
     storeWifiCredentials(ssid, password);
-    Serial.println("WiFi credentials stored successfully");
     server.send(200, "text/plain", "OK");
 }
 

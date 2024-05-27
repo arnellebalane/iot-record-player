@@ -4,6 +4,7 @@
 #include <ArduinoJson.h>
 #include <base64.h>
 #include "http-client.h"
+#include "storage.h"
 #include "secrets.h"
 
 String getAuthorizeUrl();

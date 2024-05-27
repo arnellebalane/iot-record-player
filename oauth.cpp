@@ -1,6 +1,7 @@
 #include <ArduinoJson.h>
 #include <base64.h>
 #include "http-client.h"
+#include "storage.h"
 #include "secrets.h"
 #include "oauth.h"
 
@@ -34,11 +35,12 @@ String getTokenRefreshPayload() {
 
 void storeAccessToken(JsonDocument json) {
     accessToken = json["access_token"].as<String>();
-    if (json.containsKey("refresh_token")) {
-        refreshToken = json["refresh_token"].as<String>();
-    }
     tokenValidity = json["expires_in"].as<int>();
     tokenIssueTime = millis() / 1000.0;
+    if (json.containsKey("refresh_token")) {
+        refreshToken = json["refresh_token"].as<String>();
+        storeRefreshToken(refreshToken);
+    }
 }
 
 void ensureValidAccessToken() {

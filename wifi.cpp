@@ -3,10 +3,16 @@
 #include "secrets.h"
 #include "wifi.h"
 
+#define WIFI_MODE_PIN 5 // D1
+
 int wifiMode;
 
 void determineWifiMode() {
-    wifiMode = WIFI_MODE_STATION;
+    if (digitalRead(WIFI_MODE_PIN) == LOW) {
+        wifiMode = WIFI_MODE_STATION;
+    } else {
+        wifiMode = WIFI_MODE_ACCESS_POINT;
+    }
 }
 
 void ensureWifiConnection() {

@@ -17,7 +17,8 @@ String getAuthorizeUrl() {
         + "?client_id=" + OAUTH_CLIENT_ID
         + "&response_type=code"
         + "&redirect_uri=" + OAUTH_REDIRECT_URL
-        + "&scope=" + OAUTH_SCOPES;
+        + "&scope=" + OAUTH_SCOPES
+        + "&show_dialog=true";
 }
 
 String getTokenRequestPayload(String authCode) {

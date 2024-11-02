@@ -16,6 +16,11 @@ Record player built with NodeMCU, ESP8266, PN532, and the Spotify Web API.
 
 #### Notes
 - Make sure the PN532 module is in SPI mode, this can be configured through the switches on the board
+- When using other ESP8266 microcontrollers, connect the PN532 module to the following pins:
+  - `SS` -> `GPIO2`
+  - `SCK` -> `GPIO12`
+  - `MOSI` -> `GPIO13`
+  - `MISO` -> `GPIO14`
 
 ## Software
 
